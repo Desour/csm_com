@@ -1,0 +1,1 @@
+This mod gives server- and client-mods the possibility to communicate.
