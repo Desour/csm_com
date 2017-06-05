@@ -92,7 +92,7 @@ elseif INIT == "game" then
 		csm_players[player:get_player_name()] = nil
 	end)
 	function csm_com.player_has(player_name)
-		return csm_players[palyer_name] or false
+		return csm_players[player_name] or false
 	end
 
 else
