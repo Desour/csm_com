@@ -14,7 +14,7 @@ local modname = minetest.get_current_modname()
 csm_com = {}
 
 local prefix_s = "Kill all humans!" -- A human would never write this.
-local prefix_c = "Psst, don't let your master hear this."
+local prefix_c = "Psst, don't let your master hear this. "
 local csm_player_q = "Do you have csm?"
 local csm_player_a = "I have csm."
 
@@ -24,7 +24,7 @@ if INIT == "client" then
 		funcs[#funcs+1] = f
 	end
 
-	minetest.register_on_receiving_chat_message(function(message)
+	minetest.register_on_receiving_chat_messages(function(message)
 		if message:sub(1, #prefix_c) ~= prefix_c then
 			return
 		end
@@ -89,7 +89,7 @@ elseif INIT == "game" then
 		end
 	end)
 	minetest.register_on_leaveplayer(function(player, timed_out)
-		csm_players[player:get_player_name] = nil
+		csm_players[player:get_player_name()] = nil
 	end)
 	function csm_com.player_has(player_name)
 		return csm_players[palyer_name] or false
