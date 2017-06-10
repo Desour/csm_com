@@ -24,7 +24,7 @@ if INIT == "client" then
 		funcs[#funcs+1] = f
 	end
 
-	minetest.register_on_receiving_chat_messages(function(message)
+	minetest.register_on_receiving_chat_message(function(message)
 		if message:sub(1, #prefix_c) ~= prefix_c then
 			return
 		end
