@@ -41,6 +41,10 @@ if INIT == "client" then
 		minetest.run_server_chatcommand("status", prefix_s..msg)
 	end
 
+	local on_know_funcs = {}
+	function csm_com.register_on_know(f)
+		on_know_funcs[#on_know_funcs+1] = f
+	end
 	local server_has_mod = false
 	csm_com.register_on_receive(function(msg)
 		if msg ~= csm_player_q then
@@ -48,6 +52,9 @@ if INIT == "client" then
 		end
 		server_has_mod = true
 		csm_com.send(csm_player_a)
+		for i = 1, #on_know_funcs do
+			on_know_funcs[i]()
+		end
 		return true
 	end)
 	function csm_com.server_has()
@@ -78,15 +85,23 @@ elseif INIT == "game" then
 		minetest.chat_send_player(player_name, prefix_c..msg)
 	end
 
+	local on_know_funcs = {}
+	function csm_com.register_on_know(f)
+		on_know_funcs[#on_know_funcs+1] = f
+	end
 	local csm_players = {}
 	minetest.register_on_joinplayer(function(player)
 		csm_com.send(player:get_player_name(), csm_player_q)
 	end)
 	csm_com.register_on_receive(function(name, answer)
-		if answer == csm_player_a then
-			csm_players[name] = true
-			return true
+		if answer ~= csm_player_a then
+			return
 		end
+		csm_players[name] = true
+		for i = 1, #on_know_funcs do
+			on_know_funcs[i](name)
+		end
+		return true
 	end)
 	minetest.register_on_leaveplayer(function(player, timed_out)
 		csm_players[player:get_player_name()] = nil
