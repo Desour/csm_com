@@ -20,18 +20,33 @@ local csm_player_a = "I have csm."
 
 if INIT == "client" then
 	local funcs = {}
-	function csm_com.register_on_receive(f)
-		funcs[#funcs+1] = f
+	local funcsp = {}
+	function csm_com.register_on_receive(f, p)
+		if p then
+			funcsp[p][#funcsp[p]+1] = f
+		else
+			funcs[#funcs+1] = f
+		end
 	end
 
-	minetest.register_on_receiving_chat_message(function(message)
-		if message:sub(1, #prefix_c) ~= prefix_c then
+	minetest.register_on_receiving_chat_message(function(msg)
+		if msg:sub(1, #prefix_c) ~= prefix_c then
 			return
 		end
-		message = message:sub(#prefix_c+1)
-		for i = 1, #funcs do
-			if funcs[i](message) then
+		msg = msg:sub(#prefix_c+1)
+		for pre, fs in pairs(funcsp) do
+			if msg:sub(1, #pre) == pre then
+				for i = 1, #fs do
+					if fs[i](msg) then
+						return true
+					end
+				end
 				break
+			end
+		end
+		for i = 1, #funcs do
+			if funcs[i](msg) then
+				return true
 			end
 		end
 		return true
@@ -71,19 +86,34 @@ if INIT == "client" then
 
 elseif INIT == "game" then
 	local funcs = {}
-	function csm_com.register_on_receive(f)
-		funcs[#funcs+1] = f
+	local funcsp = {}
+	function csm_com.register_on_receive(f, p)
+		if p then
+			funcsp[p][#funcsp[p]+1] = f
+		else
+			funcs[#funcs+1] = f
+		end
 	end
 
-	local funco = minetest.registered_chatcommands["status"].func
+	local status_o = minetest.registered_chatcommands["status"].func
 	minetest.override_chatcommand("status", {func = function(name, param)
 		if param:sub(1, #prefix_s) ~= prefix_s then
-			return funco(name, param)
+			return status_o(name, param)
 		end
 		param = param:sub(#prefix_s+1)
+		for pre, fs in pairs(funcsp) do
+			if param:sub(1, #pre) == pre then
+				for i = 1, #fs do
+					if fs[i](name, param) then
+						return true
+					end
+				end
+				break
+			end
+		end
 		for i = 1, #funcs do
 			if funcs[i](name, param) then
-				break
+				return true
 			end
 		end
 		return false
