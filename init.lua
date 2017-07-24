@@ -46,16 +46,24 @@ if INIT == "client" then
 		on_know_funcs[#on_know_funcs+1] = f
 	end
 	local server_has_mod = false
+	minetest.register_on_connect(function()
+		csm_com.send(csm_player_q)
+	end)
 	csm_com.register_on_receive(function(msg)
-		if msg ~= csm_player_q then
-			return
+		if msg == csm_player_a then
+			server_has_mod = true
+			for i = 1, #on_know_funcs do
+				on_know_funcs[i]()
+			end
+			return true
+		elseif msg == csm_player_q then -- Old.
+			server_has_mod = true
+			csm_com.send(csm_player_a)
+			for i = 1, #on_know_funcs do
+				on_know_funcs[i]()
+			end
+			return true
 		end
-		server_has_mod = true
-		csm_com.send(csm_player_a)
-		for i = 1, #on_know_funcs do
-			on_know_funcs[i]()
-		end
-		return true
 	end)
 	function csm_com.server_has()
 		return server_has_mod
@@ -90,14 +98,12 @@ elseif INIT == "game" then
 		on_know_funcs[#on_know_funcs+1] = f
 	end
 	local csm_players = {}
-	minetest.register_on_joinplayer(function(player)
-		csm_com.send(player:get_player_name(), csm_player_q)
-	end)
-	csm_com.register_on_receive(function(name, answer)
-		if answer ~= csm_player_a then
+	csm_com.register_on_receive(function(name, msg)
+		if msg ~= csm_player_q then
 			return
 		end
 		csm_players[name] = true
+		csm_com.send(name, csm_player_a)
 		for i = 1, #on_know_funcs do
 			on_know_funcs[i](name)
 		end
