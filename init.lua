@@ -23,6 +23,7 @@ if INIT == "client" then
 	local funcsp = {}
 	function csm_com.register_on_receive(f, p)
 		if p then
+			funcsp[p] = funcsp[p] or {}
 			funcsp[p][#funcsp[p]+1] = f
 		else
 			funcs[#funcs+1] = f
@@ -89,6 +90,7 @@ elseif INIT == "game" then
 	local funcsp = {}
 	function csm_com.register_on_receive(f, p)
 		if p then
+			funcsp[p] = funcsp[p] or {}
 			funcsp[p][#funcsp[p]+1] = f
 		else
 			funcs[#funcs+1] = f
