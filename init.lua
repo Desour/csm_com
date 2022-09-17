@@ -1,15 +1,3 @@
---[[
-
-  ____   ______ _____       ____  ____   _____
-_/ ___\ /  ___//     \    _/ ___\/  _ \ /     \
-\  \___ \___ \|  Y Y  \   \  \__(  <_> )  Y Y  \
- \___  >____  >__|_|  /____\___  >____/|__|_|  /
-     \/     \/      \/_____/   \/            \/
---]]
-
-local load_time_start = os.clock()
-local modname = minetest.get_current_modname()
-
 
 csm_com = {}
 
@@ -147,14 +135,5 @@ elseif INIT == "game" then
 	end
 
 else
-	print("csm_com is not made for such a use!")
-end
-
-
-local time = math.floor(tonumber(os.clock()-load_time_start)*100+0.5)/100
-local msg = "["..modname.."] loaded after ca. "..time
-if time > 0.05 then
-	print(msg)
-else
-	minetest.log("info", msg)
+	error("csm_com is not made for such a use!")
 end
