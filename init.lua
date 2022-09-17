@@ -62,9 +62,7 @@ if INIT == "client" then
 		on_know_funcs[#on_know_funcs+1] = f
 	end
 	local server_has_mod = false
-	minetest.register_on_connect(function()
-		csm_com.send(csm_player_q)
-	end)
+	minetest.after(0, csm_com.send, csm_player_q)
 	csm_com.register_on_receive(function(msg)
 		if msg == csm_player_a then
 			server_has_mod = true
